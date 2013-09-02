@@ -1,5 +1,23 @@
+/*
+ * Copyright 2013 Alan Kristensen. All rights reserved.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  See LICENSE in the jar file. If not, 
+ *   see {http://www.gnu.org/licenses/}.
+ */
 package ws.kristensen.DaylightSensorExpanded;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,9 +55,10 @@ public final class DaylightSensorExpanded extends JavaPlugin {
     private boolean daylightSensorAltered_Dirty = false;
     protected final DseCommandListenerSensorSet         clSensorSet         = new DseCommandListenerSensorSet(this);
     protected final DseCommandListenerSensorSetAll      clSensorSetAll      = new DseCommandListenerSensorSetAll(this);
+    protected final DseCommandListenerSensorConvertAll  clSensorConvertAll  = new DseCommandListenerSensorConvertAll(this);
     protected final DseCommandListenerSensorClear       clSensorClear       = new DseCommandListenerSensorClear(this);
     protected final DseCommandListenerSensorList        clSensorList        = new DseCommandListenerSensorList(this);
-    protected final DseCommandListenerSensorConvertAll  clSensorConvertAll  = new DseCommandListenerSensorConvertAll(this);
+    protected final DseCommandListenerSensorInfo        clSensorInfo        = new DseCommandListenerSensorInfo(this);
     
     
     /**
@@ -74,9 +93,18 @@ public final class DaylightSensorExpanded extends JavaPlugin {
             //Sensor Commands
             getCommand("dsesensorset").setExecutor(clSensorSet);
             getCommand("dsesensorsetall").setExecutor(clSensorSetAll);
+            getCommand("dsesensorconvertall").setExecutor(clSensorConvertAll);
             getCommand("dsesensorclear").setExecutor(clSensorClear);
             getCommand("dsesensorlist").setExecutor(clSensorList);
-            getCommand("dsesensorconvertall").setExecutor(clSensorConvertAll);
+            getCommand("dsesensorinfo").setExecutor(clSensorInfo);
+            
+        //Track the usage of this plugin with MCStats
+        try {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+        }
     }
 
     /**
@@ -202,6 +230,24 @@ public final class DaylightSensorExpanded extends JavaPlugin {
     public Set<String>   daylightSensor_Profiles_GetKeysAsSet() {
         return daylightSensorProfiles.keySet();
     }
+    public List<String>  daylightSensor_Profiles_GetInfo(final String name) {
+        List<Integer> profile = daylightSensor_Profiles_GetProfileAsList(name);
+        List<String> returnList = new ArrayList<String>();
+
+        String[] output = {"    ","    ","    ","    "};
+        
+        for (int i = 0; i < 16; i++) {
+            output[i%4] = output[i%4] + (String.valueOf(i) + " ").substring(0, 2) + " -> " + (String.valueOf(profile.get(i)) + " ").substring(0,2) + "     ";
+        }
+        returnList.add("Sensor profile: " + name);
+        returnList.add("(Standard redstone level -> mapped level)");
+        returnList.add(output[0]);
+        returnList.add(output[1]);
+        returnList.add(output[2]);
+        returnList.add(output[3]);
+        
+        return returnList;
+    }    
     
     public void          daylightSensor_Altered_Set(final Location blockLocation, final String profile) {
         daylightSensorAltered.put(blockLocation, profile);
@@ -273,12 +319,43 @@ public final class DaylightSensorExpanded extends JavaPlugin {
             return returnValue;
     }
 
+    public void          sendMessageInfo(CommandSender sender, List<String> msg) {
+        for (String line : msg) {
+            sendMessageInfo(sender, line);
+        }
+    }
     public void          sendMessageInfo(CommandSender sender, String msg) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             player.sendMessage(msg);
         } else {
             this.getLogger().info(msg);
+        }
+    }
+    public void          sendMessageWarning(CommandSender sender, List<String> msg) {
+        for (String line : msg) {
+            sendMessageWarning(sender, line);
+        }
+    }
+    public void          sendMessageWarning(CommandSender sender, String msg) {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            player.sendMessage(msg);
+        } else {
+            this.getLogger().warning(msg);
+        }
+    }
+    public void          sendMessageSevere(CommandSender sender, List<String> msg) {
+        for (String line : msg) {
+            sendMessageSevere(sender, line);
+        }
+    }
+    public void          sendMessageSevere(CommandSender sender, String msg) {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            player.sendMessage(msg);
+        } else {
+            this.getLogger().severe(msg);
         }
     }
     

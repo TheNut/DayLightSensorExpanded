@@ -22,27 +22,27 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class DseCommandListenerSensorClear implements CommandExecutor {
+public class DseCommandListenerSensorInfo implements CommandExecutor {
     private final DaylightSensorExpanded plugin;
 
-    public DseCommandListenerSensorClear(DaylightSensorExpanded plugin) {
+    public DseCommandListenerSensorInfo(DaylightSensorExpanded plugin) {
         this.plugin = plugin;
     }
-    
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
-            Player player = (Player) sender;
-            if (!player.hasPermission("daylightsensorexpanded.sensor.clear")) {
+            Player player = (Player)sender;
+            if (!player.hasPermission("daylightsensorexpanded.sensor.info")) {
                 return true;
             }
-            
-            //make sure they specify the profile name
-            plugin.daylightSensor_PendingActions_Set(player, "clear:");
-            plugin.sendMessageInfo(sender, "Click on sensor to reset to standard Daylight Sensor.");
+
+            plugin.daylightSensor_PendingActions_Set(player, "info:");
+            plugin.sendMessageInfo(sender, "Click on sensor to view the profile information.");
         } else {
-            plugin.sendMessageInfo(sender, "'delete' command not available at console");
+            plugin.sendMessageInfo(sender, "'info' command not available at console");
         }
+        
         return true;
     }
 }

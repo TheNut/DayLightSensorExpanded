@@ -1,4 +1,23 @@
+/*
+ * Copyright 2013 Alan Kristensen. All rights reserved.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  See LICENSE in the jar file. If not, 
+ *   see {http://www.gnu.org/licenses/}.
+ */
 package ws.kristensen.DaylightSensorExpanded;
+
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -29,7 +48,7 @@ public class DseBlockListener implements Listener {
                 //record the block information as an extended sensor.
                 plugin.daylightSensor_Altered_Set(block.getLocation(), pendingAction.substring(7));
                 //notify user of success or failure of recording.
-                player.sendMessage("Daylight Sensor set to profile: " + pendingAction.substring(7));
+                plugin.sendMessageInfo(player, "Daylight Sensor set to profile: " + pendingAction.substring(7));
             }
         }
     }
@@ -39,29 +58,39 @@ public class DseBlockListener implements Listener {
         //get any pending action for the player
         String pendingAction = plugin.daylightSensor_PendingActions_Get(event.getPlayer());
         //make sure the user has set a known pending action that we handle just prior to this.
-        if (pendingAction.startsWith("set:") || pendingAction.startsWith("clear:")) {
+        if (pendingAction.startsWith("set:") || pendingAction.startsWith("clear:") || pendingAction.startsWith("info:")) {
             Player player = event.getPlayer();
             Block block = event.getBlock();
-            String msg = "";
             if (block.getType() == Material.DAYLIGHT_DETECTOR) {
-                //Set the default failure message
-                msg = "No pending action is set.  No action taken.";
                 if (pendingAction.startsWith("set:")) {
                     //record the block information as an extended sensor.
                     plugin.daylightSensor_Altered_Set(block.getLocation(), pendingAction.substring(4));
-                    msg = "Daylight Sensor set to profile: " + pendingAction.substring(4);
+                    plugin.sendMessageInfo(player, "Daylight Sensor set to profile: " + pendingAction.substring(4));
                 } else if (pendingAction.startsWith("clear:")) {
                     //remove the extended properties from the sensor that was clicked
                     plugin.daylightSensor_Altered_Remove(block.getLocation());
-                    msg = "Profile cleared from Daylight Sensor";
+                    plugin.sendMessageInfo(player, "Profile cleared from Daylight Sensor");
+                } else if (pendingAction.startsWith("info:")) {
+                    //display the profile information for the sensor
+
+                    //see if a profile exists
+                    if (!plugin.daylightSensor_Altered_Exist(block.getLocation())) {
+                        plugin.sendMessageInfo(player, "This is a standard Daylight Sensor.");
+                    } else {
+                        //get profile parameters
+                        String profileName = plugin.daylightSensor_Altered_Get(block.getLocation());
+                        List<String> profileInfo = plugin.daylightSensor_Profiles_GetInfo(profileName);
+                        plugin.sendMessageInfo(player, profileInfo);
+                    }
+                } else {
+                    //Send the default failure message
+                    plugin.sendMessageInfo(player, "No pending action is set.  No action taken.");
                 }
                 
-                //notify user of success or failure of recording.
-                player.sendMessage(msg);
                 event.setCancelled(true);
             } else {
                 //let the user know it was a bad object.
-                player.sendMessage("DaylightSensorExtended pending action canceled.");
+                plugin.sendMessageInfo(player, "DaylightSensorExtended pending action canceled.");
                 
                 //do not cancel this event since they wanted to damage something else
             }
@@ -84,7 +113,7 @@ public class DseBlockListener implements Listener {
                 //If it is then change the current to the mapped current.
                 if (test > -1 && event.getNewCurrent() != test) {
                     if (plugin.debugLevel > 0)
-                        plugin.getLogger().info("Altered sensor " + plugin.convertLocationToString(block.getLocation()) + " new redstone power from :" + String.valueOf(event.getNewCurrent()) + " to:" + String.valueOf(test));
+                        plugin.sendMessageInfo(null, "Altered sensor " + plugin.convertLocationToString(block.getLocation()) + " new redstone power from :" + String.valueOf(event.getNewCurrent()) + " to:" + String.valueOf(test));
                     event.setNewCurrent(test);
                 }
             }

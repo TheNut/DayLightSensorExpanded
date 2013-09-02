@@ -1,3 +1,20 @@
+/*
+ * Copyright 2013 Alan Kristensen. All rights reserved.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  See LICENSE in the jar file. If not, 
+ *   see {http://www.gnu.org/licenses/}.
+ */
 package ws.kristensen.DaylightSensorExpanded;
 
 import java.util.List;
@@ -27,19 +44,10 @@ public class DseCommandListenerProfileList implements CommandExecutor {
         
         Set<String> keys = plugin.daylightSensor_Profiles_GetKeysAsSet();
         for (String key : keys) {
-            List<Integer> profile = plugin.daylightSensor_Profiles_GetProfileAsList(key);
-
-            String[] output = {"    ","    ","    ","    "};
-            
-            for (int i = 0; i < 16; i++) {
-                output[i%4] = output[i%4] + (String.valueOf(i) + " ").substring(0, 2) + " -> " + (String.valueOf(profile.get(i)) + " ").substring(0,2) + "     ";
-            }
-            plugin.sendMessageInfo(sender, key + ": " + plugin.daylightSensor_Profiles_GetProfileAsString(key));
-            plugin.sendMessageInfo(sender, output[0]);
-            plugin.sendMessageInfo(sender, output[1]);
-            plugin.sendMessageInfo(sender, output[2]);
-            plugin.sendMessageInfo(sender, output[3]);
-            //plugin.sendMessageInfo(sender, key + ": " + plugin.daylightSensor_Profiles_GetProfileAsString(key));
+            //get profile output strings
+            List<String> profileInfo = plugin.daylightSensor_Profiles_GetInfo(key);
+            //return the lines to requester
+            plugin.sendMessageInfo(sender, profileInfo);
         }
         return true;
     }

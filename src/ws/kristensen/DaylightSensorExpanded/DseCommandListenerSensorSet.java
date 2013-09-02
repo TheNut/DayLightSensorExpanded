@@ -1,3 +1,20 @@
+/*
+ * Copyright 2013 Alan Kristensen. All rights reserved.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  See LICENSE in the jar file. If not, 
+ *   see {http://www.gnu.org/licenses/}.
+ */
 package ws.kristensen.DaylightSensorExpanded;
 
 import org.bukkit.command.Command;
@@ -25,15 +42,15 @@ public class DseCommandListenerSensorSet implements CommandExecutor {
                 //make sure profile exists
                 if (plugin.daylightSensor_Profiles_Exist(args[0])) {
                     plugin.daylightSensor_PendingActions_Set(player, "set:" + args[0]);
-                    player.sendMessage("Click on sensor to set to profile: " + args[0]);
+                    plugin.sendMessageInfo(sender, "Click on sensor to set to profile: " + args[0]);
                 } else {
-                    player.sendMessage("Invalid specified profile: " + args[0]);
+                    plugin.sendMessageInfo(sender, "Invalid specified profile: " + args[0]);
                 }
                 return true;
             }
             return false;
         } else {
-            plugin.getLogger().info("'set' command not available at console");
+            plugin.sendMessageInfo(sender, "'set' command not available at console");
             return true;
         }
         
