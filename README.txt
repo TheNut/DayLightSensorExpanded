@@ -20,6 +20,9 @@ See plugin.yml for list of commands.
 
 Changelog
 ---------
+    Version 0.4 2013-09-27
+        - Built for 1.6.4
+        - No other changes or bug fixes
     Version 0.3 2013-08-31
         - Added sensorInfo command to list what profile a sensor is mapped to.
         - Added link to mcstats.org see bukkit page for details.

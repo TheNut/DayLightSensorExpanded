@@ -1,5 +1,5 @@
 name: DaylightSensorExpanded
-version: 0.3
+version: 0.4
 description: This allows you to change the values of the redstone signal strength of a Daylight Sensor. 
              See www.minecraftwiki.net/wiki/Daylight_Sensor
              Normally the values are from 0 to 15, you can re-map these 16 values to any other values you want.
